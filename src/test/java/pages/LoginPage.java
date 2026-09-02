@@ -3,17 +3,19 @@ package pages;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+
+import java.time.Duration;
 
 /**
  * Page Object for the-internet.herokuapp.com/login.
- * Encapsulates the page's locators and actions so tests don't
- * talk to Selenium directly -- they talk to this page's API instead.
  */
 public class LoginPage {
 
     private final WebDriver driver;
+    private final WebDriverWait wait;
 
-    // Locators live here, in one place, instead of scattered across tests.
     private final By usernameField = By.id("username");
     private final By passwordField = By.id("password");
     private final By submitButton = By.cssSelector("button[type='submit']");
@@ -21,6 +23,9 @@ public class LoginPage {
 
     public LoginPage(WebDriver driver) {
         this.driver = driver;
+        // Wait up to 10 seconds for a condition before giving up --
+        // far more reliable than assuming elements appear instantly.
+        this.wait = new WebDriverWait(driver, Duration.ofSeconds(10));
     }
 
     public void open() {
@@ -28,13 +33,15 @@ public class LoginPage {
     }
 
     public void login(String username, String password) {
-        driver.findElement(usernameField).sendKeys(username);
+        wait.until(ExpectedConditions.visibilityOfElementLocated(usernameField))
+                .sendKeys(username);
         driver.findElement(passwordField).sendKeys(password);
         driver.findElement(submitButton).click();
     }
 
     public String getFlashMessageText() {
-        WebElement flash = driver.findElement(flashMessage);
+        // Wait for the flash message to actually be visible before reading it.
+        WebElement flash = wait.until(ExpectedConditions.visibilityOfElementLocated(flashMessage));
         return flash.getText();
     }
 
