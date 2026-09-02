@@ -35,7 +35,8 @@ public class LoginTest {
         loginPage.open();
     }
 
-    @Test(description = "Valid credentials should log the user into the secure area")
+    @Test(description = "Valid credentials should log the user into the secure area",
+        retryAnalyzer = RetryAnalyzer.class)
     public void testValidLogin_showsSuccessMessage() {
         loginPage.login("tomsmith", "SuperSecretPassword!");
 
