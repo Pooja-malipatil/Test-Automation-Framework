@@ -6,15 +6,16 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 import pages.LoginPage;
 
 import static org.testng.Assert.assertTrue;
 
 /**
- * UI automation against the-internet.herokuapp.com/login, refactored to
- * use the Page Object Model: this class only orchestrates the test flow
- * and asserts outcomes -- it never touches locators directly.
+ * UI automation against the-internet.herokuapp.com/login, using the
+ * Page Object Model, plus a data-driven test covering multiple
+ * invalid credential combinations.
  */
 public class LoginTest {
 
@@ -50,6 +51,29 @@ public class LoginTest {
 
         assertTrue(loginPage.getFlashMessageText().contains("Your username is invalid"),
                 "Expected error message not found");
+        assertTrue(loginPage.getCurrentUrl().contains("/login"),
+                "Expected to remain on the login page after a failed login");
+    }
+
+    @DataProvider(name = "invalidCredentials")
+    public Object[][] invalidCredentials() {
+        // Each row: { username, password, expected substring in the flash message }
+        return new Object[][] {
+            { "wrongUser", "wrongPassword", "Your username is invalid" },
+            { "tomsmith", "wrongPassword", "Your password is invalid" },
+            { "", "", "Your username is invalid" },
+            { "tomsmith", "", "Your password is invalid" }
+        };
+    }
+
+    @Test(dataProvider = "invalidCredentials",
+          description = "Various invalid credential combinations show the correct error message")
+    public void testLogin_withInvalidCredentialCombinations(String username, String password, String expectedMessage) {
+        loginPage.login(username, password);
+
+        assertTrue(loginPage.getFlashMessageText().contains(expectedMessage),
+                "Expected message containing '" + expectedMessage + "' but got: "
+                        + loginPage.getFlashMessageText());
         assertTrue(loginPage.getCurrentUrl().contains("/login"),
                 "Expected to remain on the login page after a failed login");
     }

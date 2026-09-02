@@ -3,6 +3,7 @@ package api;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import org.testng.annotations.BeforeClass;
+import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import static io.restassured.RestAssured.given;
@@ -17,6 +18,7 @@ import static org.testng.Assert.assertTrue;
  *  - Status code validation (200, 201, 404)
  *  - Response body/field validation
  *  - Basic latency assertion
+ *  - Data-driven testing via @DataProvider
  */
 public class PostsApiTest {
 
@@ -118,5 +120,27 @@ public class PostsApiTest {
 
         int postCount = response.jsonPath().getList("$").size();
         assertTrue(postCount > 0, "Expected at least one post in the response body");
+    }
+
+    @DataProvider(name = "invalidPostIds")
+    public Object[][] invalidPostIds() {
+        // Each inner array is one "row" of test data passed to the test method below.
+        return new Object[][] {
+            { 9999 },
+            { 100000 },
+            { -1 },
+            { 0 }
+        };
+    }
+
+    @Test(dataProvider = "invalidPostIds",
+          description = "GET with various invalid/non-existent post IDs returns 404")
+    public void testGetPost_withInvalidIds_returns404(int invalidId) {
+        given()
+            .pathParam("id", invalidId)
+        .when()
+            .get("/posts/{id}")
+        .then()
+            .statusCode(404);
     }
 }
