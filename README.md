@@ -1,5 +1,7 @@
 # Test Automation Framework
 
+![Run Tests](https://github.com/Pooja-malipatil/Test-Automation-Framework/actions/workflows/ci.yml/badge.svg)
+
 A Java-based test automation project demonstrating API testing, UI testing,
 and automated HTML reporting — built to showcase practical QA/SDET skills.
 
