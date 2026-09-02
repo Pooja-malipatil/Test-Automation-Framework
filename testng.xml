@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<suite name="Test Automation Suite" parallel="none" verbose="1">
+
+    <!-- Registering our custom listener here applies it to every test below,
+         so ExtentReports logging happens automatically. -->
+    <listeners>
+        <listener class-name="listeners.ExtentReportListener"/>
+    </listeners>
+
+    <test name="API Tests">
+        <classes>
+            <class name="api.PostsApiTest"/>
+        </classes>
+    </test>
+
+    <test name="UI Tests">
+        <classes>
+            <class name="ui.LoginTest"/>
+            <class name="ui.DropdownFormTest"/>
+        </classes>
+    </test>
+
+</suite>
